@@ -1,0 +1,11 @@
+{
+  "env": {
+    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
+  },
+  "permissions": {
+    "allow": [
+      "Bash(source /Users/jongsoobae/workspace/plans/benchmark_api/.venv/bin/activate)",
+      "Bash(uv pip:*)"
+    ]
+  }
+}

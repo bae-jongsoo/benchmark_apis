@@ -1,0 +1,53 @@
+version: "3.8"
+
+services:
+  django_app:
+    build:
+      context: .
+      dockerfile: django_app/Dockerfile
+    environment:
+      - WORKERS=${WORKERS:-4}
+      - DB_HOST=host.docker.internal
+      - DB_PORT=5432
+      - DB_NAME=foodcommit
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres
+    ports:
+      - "${APP_PORT:-8001}:8000"
+    deploy:
+      resources:
+        limits:
+          cpus: "2"
+          memory: 4G
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  fastapi_app:
+    build:
+      context: .
+      dockerfile: fastapi_app/Dockerfile
+    environment:
+      - WORKERS=${WORKERS:-4}
+      - CPU_HANDLER=${CPU_HANDLER:-sync}
+      - DB_HOST=host.docker.internal
+      - DB_PORT=5432
+      - DB_NAME=foodcommit
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres
+    ports:
+      - "${APP_PORT:-8011}:8000"
+    deploy:
+      resources:
+        limits:
+          cpus: "2"
+          memory: 4G
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  k6:
+    image: grafana/k6:latest
+    volumes:
+      - ./k6:/scripts
+      - ./results:/results
+    extra_hosts:
+      - "host.docker.internal:host-gateway"

@@ -1,0 +1,63 @@
+test_duration: 40        # 초
+concurrent_users: 100
+rampup_seconds: 10       # k6 stages: 0→VUs 도달 시간
+warmup_seconds: 5
+
+server_configs:
+  - name: django-4w
+    framework: django
+    workers: 4
+    port: 8001
+  - name: django-32w
+    framework: django
+    workers: 32
+    port: 8003
+  - name: fastapi-2w
+    framework: fastapi
+    workers: 2
+    port: 8011
+  - name: fastapi-4w
+    framework: fastapi
+    workers: 4
+    port: 8012
+  # Phase 1 CPU Bound 전용 구성
+  - name: fastapi-4w-sync
+    framework: fastapi
+    workers: 4
+    port: 8013
+    cpu_handler: sync           # def 핸들러 (threadpool)
+  - name: fastapi-4w-async
+    framework: fastapi
+    workers: 4
+    port: 8014
+    cpu_handler: async          # async def 핸들러 (이벤트 루프 블로킹)
+
+phase1_scenarios:
+  cpu_bound:
+    - django-4w
+    - django-32w
+    - fastapi-2w
+    - fastapi-4w-sync
+    - fastapi-4w-async
+  io_bound:
+    - django-4w
+    - django-32w
+    - fastapi-2w
+    - fastapi-4w
+  mixed:
+    - django-4w
+    - django-32w
+    - fastapi-2w
+    - fastapi-4w
+
+phase2_scenarios:
+  real_simple:
+    - django-4w
+    - django-32w
+    - fastapi-2w
+    - fastapi-4w
+  real_heavy:
+    - django-4w
+    - django-32w
+    - fastapi-2w
+    - fastapi-4w
