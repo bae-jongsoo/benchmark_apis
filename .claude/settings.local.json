@@ -5,7 +5,15 @@
   "permissions": {
     "allow": [
       "Bash(source /Users/jongsoobae/workspace/plans/benchmark_api/.venv/bin/activate)",
-      "Bash(uv pip:*)"
+      "Bash(uv pip:*)",
+      "Bash(docker compose:*)",
+      "Bash(WORKERS=4 APP_PORT=8001 docker compose up -d --build django-app)",
+      "Bash(docker ps:*)",
+      "Bash(xargs -r docker rm -f)",
+      "Bash(docker network:*)",
+      "Bash(python scripts/run_benchmark.py phase1)",
+      "Bash(python scripts/run_benchmark.py phase6)",
+      "Bash(python scripts/run_benchmark.py phase7)"
     ]
   }
 }

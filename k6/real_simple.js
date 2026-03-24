@@ -2,12 +2,23 @@ import http from 'k6/http';
 import { check } from 'k6';
 
 const BASE_URL = __ENV.BASE_URL || 'http://localhost:8000';
+const VUS = parseInt(__ENV.VUS || '100');
+const RAMPUP = __ENV.RAMPUP || '10s';
+const DURATION = __ENV.DURATION || '30s';
 
 export const options = {
-    stages: [
-        { duration: '10s', target: 100 },
-        { duration: '30s', target: 100 },
-    ],
+    scenarios: {
+        default: {
+            executor: 'ramping-vus',
+            startVUs: 0,
+            stages: [
+                { duration: RAMPUP, target: VUS },
+                { duration: DURATION, target: VUS },
+            ],
+            gracefulStop: '0s',
+            gracefulRampDown: '0s',
+        },
+    },
 };
 
 export default function () {

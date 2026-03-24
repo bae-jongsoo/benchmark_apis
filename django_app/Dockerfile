@@ -12,4 +12,5 @@ ENTRYPOINT ["bash", "entrypoint.sh"]
 CMD gunicorn config.wsgi:application \
     --bind 0.0.0.0:8000 \
     --workers ${WORKERS:-4} \
+    --keep-alive 30 \
     --timeout 120

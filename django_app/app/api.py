@@ -32,8 +32,8 @@ def fib(n: int) -> int:
 
 @api.get("/benchmark/cpu")
 def cpu_bound(request):
-    """CPU Bound: fib(30) 계산"""
-    result = fib(30)
+    """CPU Bound: fib(25) 계산"""
+    result = fib(25)
     return {"result": result}
 
 

@@ -24,13 +24,13 @@ if CPU_HANDLER == "async":
     @router.get("/cpu")
     async def cpu_bound():
         """CPU Bound (async def): 이벤트 루프 블로킹"""
-        result = fib(30)
+        result = fib(25)
         return {"result": result}
 else:
     @router.get("/cpu")
     def cpu_bound():
         """CPU Bound (def): threadpool 실행"""
-        result = fib(30)
+        result = fib(25)
         return {"result": result}
 
 

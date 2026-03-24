@@ -1,7 +1,5 @@
-version: "3.8"
-
 services:
-  django_app:
+  django-app:
     build:
       context: .
       dockerfile: django_app/Dockerfile
@@ -17,18 +15,22 @@ services:
     deploy:
       resources:
         limits:
-          cpus: "2"
-          memory: 4G
+          cpus: "${APP_CPUS:-2}"
+          memory: 2G
     extra_hosts:
       - "host.docker.internal:host-gateway"
+    networks:
+      - bench-network
 
-  fastapi_app:
+  fastapi-app:
     build:
       context: .
       dockerfile: fastapi_app/Dockerfile
     environment:
       - WORKERS=${WORKERS:-4}
       - CPU_HANDLER=${CPU_HANDLER:-sync}
+      - POOL_SIZE=${POOL_SIZE:-20}
+      - MAX_OVERFLOW=${MAX_OVERFLOW:-20}
       - DB_HOST=host.docker.internal
       - DB_PORT=5432
       - DB_NAME=foodcommit
@@ -39,15 +41,21 @@ services:
     deploy:
       resources:
         limits:
-          cpus: "2"
-          memory: 4G
+          cpus: "${APP_CPUS:-2}"
+          memory: 2G
     extra_hosts:
       - "host.docker.internal:host-gateway"
+    networks:
+      - bench-network
 
   k6:
     image: grafana/k6:latest
     volumes:
       - ./k6:/scripts
       - ./results:/results
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
+    networks:
+      - bench-network
+
+networks:
+  bench-network:
+    driver: bridge

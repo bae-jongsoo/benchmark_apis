@@ -9,10 +9,13 @@ DB_PASSWORD = os.environ.get("DB_PASSWORD", "postgres")
 
 DATABASE_URL = f"postgresql+asyncpg://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
 
+POOL_SIZE = int(os.environ.get("POOL_SIZE", "5"))
+MAX_OVERFLOW = int(os.environ.get("MAX_OVERFLOW", "10"))
+
 engine = create_async_engine(
     DATABASE_URL,
-    pool_size=5,       # 기본값 — 기획서 스펙
-    max_overflow=10,   # 기본값 — 기획서 스펙
+    pool_size=POOL_SIZE,
+    max_overflow=MAX_OVERFLOW,
 )
 
 async_session = async_sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)

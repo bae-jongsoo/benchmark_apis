@@ -27,3 +27,10 @@ django_app/static/
 
 # Environment
 .env
+
+# Claude
+.claude/
+
+# Notes
+findings-*.md
+

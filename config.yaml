@@ -1,5 +1,5 @@
 test_duration: 40        # 초
-concurrent_users: 100
+concurrent_users: 1000
 rampup_seconds: 10       # k6 stages: 0→VUs 도달 시간
 warmup_seconds: 5
 
@@ -8,56 +8,76 @@ server_configs:
     framework: django
     workers: 4
     port: 8001
-  - name: django-32w
+  - name: django-16w
     framework: django
-    workers: 32
+    workers: 16
     port: 8003
   - name: fastapi-2w
     framework: fastapi
     workers: 2
     port: 8011
+    pool_size: 20
+    max_overflow: 20
   - name: fastapi-4w
     framework: fastapi
     workers: 4
     port: 8012
-  # Phase 1 CPU Bound 전용 구성
-  - name: fastapi-4w-sync
-    framework: fastapi
-    workers: 4
-    port: 8013
-    cpu_handler: sync           # def 핸들러 (threadpool)
-  - name: fastapi-4w-async
-    framework: fastapi
-    workers: 4
-    port: 8014
-    cpu_handler: async          # async def 핸들러 (이벤트 루프 블로킹)
+    pool_size: 20
+    max_overflow: 20
 
+# Phase별 앱 컨테이너 CPU 코어 제한
+phase_cpus:
+  phase1: "2"
+  phase2: "4"
+  phase3: "2"
+  phase4: "4"
+  phase5: "2"
+  phase6: "4"
+
+# Phase 1: CPU-bound, 2코어
 phase1_scenarios:
   cpu_bound:
     - django-4w
-    - django-32w
-    - fastapi-2w
-    - fastapi-4w-sync
-    - fastapi-4w-async
-  io_bound:
-    - django-4w
-    - django-32w
-    - fastapi-2w
-    - fastapi-4w
-  mixed:
-    - django-4w
-    - django-32w
+    - django-16w
     - fastapi-2w
     - fastapi-4w
 
+# Phase 2: CPU-bound, 4코어
 phase2_scenarios:
-  real_simple:
+  cpu_bound:
     - django-4w
-    - django-32w
+    - django-16w
     - fastapi-2w
     - fastapi-4w
-  real_heavy:
+
+# Phase 3: IO-bound, 2코어
+phase3_scenarios:
+  io_bound:
     - django-4w
-    - django-32w
+    - django-16w
+    - fastapi-2w
+    - fastapi-4w
+
+# Phase 4: IO-bound, 4코어
+phase4_scenarios:
+  io_bound:
+    - django-4w
+    - django-16w
+    - fastapi-2w
+    - fastapi-4w
+
+# Phase 5: Real Heavy (DB), 2코어
+phase5_scenarios:
+  real:
+    - django-4w
+    - django-16w
+    - fastapi-2w
+    - fastapi-4w
+
+# Phase 6: Real Heavy (DB), 4코어
+phase6_scenarios:
+  real:
+    - django-4w
+    - django-16w
     - fastapi-2w
     - fastapi-4w
