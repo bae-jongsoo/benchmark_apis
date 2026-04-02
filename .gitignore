@@ -28,6 +28,10 @@ django_app/static/
 # Environment
 .env
 
+# Gradle / Java build
+spring_app/.gradle/
+spring_app/build/
+
 # Claude
 .claude/
 
