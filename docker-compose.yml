@@ -48,6 +48,29 @@ services:
     networks:
       - bench-network
 
+  spring-app:
+    build:
+      context: .
+      dockerfile: spring_app/Dockerfile
+    environment:
+      - TOMCAT_MAX_THREADS=${TOMCAT_MAX_THREADS:-200}
+      - DB_HOST=host.docker.internal
+      - DB_PORT=5432
+      - DB_NAME=foodcommit
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres
+    ports:
+      - "${APP_PORT:-8031}:8080"
+    deploy:
+      resources:
+        limits:
+          cpus: "${APP_CPUS:-2}"
+          memory: 2G
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      - bench-network
+
   k6:
     image: grafana/k6:latest
     volumes:

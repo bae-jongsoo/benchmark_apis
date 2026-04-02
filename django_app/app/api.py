@@ -52,6 +52,31 @@ def mixed(request):
     return {"result": result, "slept_ms": 50}
 
 
+# 더미 Food 데이터 (DB 없이 직렬화 테스트용)
+_DUMMY_FOODS = [
+    FoodOut(
+        food_code=f"D{i:05d}", food_name=f"테스트식품{i}",
+        data_type="일반", energy_kcal=100.0 + i, water_g=80.0,
+        protein_g=10.0, fat_g=5.0, carbohydrate_g=20.0,
+        sugar_g=3.0, fiber_g=2.0, calcium_mg=50.0,
+        sodium_mg=200.0, vitamin_c_mg=10.0, source_name="테스트",
+    )
+    for i in range(20)
+]
+
+
+@api.get("/benchmark/fake-io")
+def fake_io(request):
+    """Fake IO: 5ms sleep + Pydantic 직렬화 (DB 시뮬레이션)"""
+    time.sleep(0.005)
+    return FoodListResponse(
+        items=_DUMMY_FOODS,
+        total=1000,
+        page=1,
+        size=20,
+    )
+
+
 # ========== Phase 2: Real API ==========
 
 @api.get("/api/foods", response=FoodListResponse)

@@ -1,0 +1,12 @@
+.venv
+.git
+results
+data
+__pycache__
+*.pyc
+.claude
+tasks
+findings-*
+*.md
+spring_app/.gradle
+spring_app/build

@@ -54,12 +54,24 @@ async def food_search(
     """Real Heavy: 복합 필터 + 정렬"""
     query = select(Food)
 
+    # WHERE 조건
+    conditions = []
     if min_energy is not None:
-        query = query.where(Food.energy_kcal >= min_energy)
+        conditions.append(Food.energy_kcal >= min_energy)
     if max_energy is not None:
-        query = query.where(Food.energy_kcal <= max_energy)
+        conditions.append(Food.energy_kcal <= max_energy)
     if data_type:
-        query = query.where(Food.data_type == data_type)
+        conditions.append(Food.data_type == data_type)
+
+    if conditions:
+        query = query.where(*conditions)
+
+    # 총 건수 (ORDER BY 없이 직접 COUNT)
+    count_query = select(func.count()).select_from(Food)
+    if conditions:
+        count_query = count_query.where(*conditions)
+    total_result = await db.execute(count_query)
+    total = total_result.scalar()
 
     # 정렬
     sort_columns = {
@@ -75,16 +87,10 @@ async def food_search(
         "-carbohydrate_g": Food.carbohydrate_g.desc(),
     }
     order_clause = sort_columns.get(sort, Food.food_name.asc())
-    query = query.order_by(order_clause)
-
-    # 총 건수
-    count_query = select(func.count()).select_from(query.subquery())
-    total_result = await db.execute(count_query)
-    total = total_result.scalar()
 
     # 페이지네이션
     offset = (page - 1) * size
-    query = query.offset(offset).limit(size)
+    query = query.order_by(order_clause).offset(offset).limit(size)
     result = await db.execute(query)
     items = result.scalars().all()
 

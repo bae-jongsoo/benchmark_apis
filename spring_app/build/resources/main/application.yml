@@ -1,0 +1,17 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:foodcommit}
+    username: ${DB_USER:postgres}
+    password: ${DB_PASSWORD:postgres}
+    hikari:
+      maximum-pool-size: ${POOL_SIZE:20}
+      minimum-idle: ${POOL_SIZE:20}
+  jpa:
+    hibernate:
+      ddl-auto: none
+    open-in-view: false
+
+server:
+  tomcat:
+    threads:
+      max: ${TOMCAT_MAX_THREADS:200}

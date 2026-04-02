@@ -47,13 +47,18 @@ def get_server_config(config: dict, name: str) -> dict:
     raise ValueError(f"서버 구성을 찾을 수 없음: {name}")
 
 
+def _get_service_name(framework: str) -> str:
+    """프레임워크에 대응하는 docker-compose 서비스명 반환"""
+    return {"django": "django-app", "fastapi": "fastapi-app", "spring": "spring-app"}[framework]
+
+
 def start_app_container(server_config: dict, app_cpus: str = "2"):
     """Docker Compose로 앱 컨테이너 기동"""
-    framework = server_config["framework"]  # "django" or "fastapi"
-    service = "django-app" if framework == "django" else "fastapi-app"
+    framework = server_config["framework"]
+    service = _get_service_name(framework)
 
     env = os.environ.copy()
-    env["WORKERS"] = str(server_config["workers"])
+    env["WORKERS"] = str(server_config.get("workers", 1))
     env["APP_PORT"] = str(server_config["port"])
     env["APP_CPUS"] = app_cpus
     if "cpu_handler" in server_config:
@@ -62,6 +67,8 @@ def start_app_container(server_config: dict, app_cpus: str = "2"):
         env["POOL_SIZE"] = str(server_config["pool_size"])
     if "max_overflow" in server_config:
         env["MAX_OVERFLOW"] = str(server_config["max_overflow"])
+    if "tomcat_max_threads" in server_config:
+        env["TOMCAT_MAX_THREADS"] = str(server_config["tomcat_max_threads"])
 
     subprocess.run(
         ["docker", "compose", "up", "-d", "--build", service],
@@ -240,8 +247,9 @@ def run_k6(
     duration_seconds: int = 30,
 ):
     """k6 Docker 컨테이너로 테스트 실행 (같은 Docker 네트워크 내 서비스명으로 통신)"""
-    service = "django-app" if framework == "django" else "fastapi-app"
-    base_url = f"http://{service}:8000"
+    service = _get_service_name(framework)
+    internal_port = 8080 if framework == "spring" else 8000
+    base_url = f"http://{service}:{internal_port}"
     raw_json_path = f"/results/{phase}/raw/{scenario}_{config_name}.json"
 
     subprocess.run(
@@ -262,7 +270,7 @@ def run_k6(
 
 def save_app_logs(framework: str, phase: str, scenario_name: str, config_name: str):
     """앱 컨테이너 로그를 파일로 저장"""
-    service = "django-app" if framework == "django" else "fastapi-app"
+    service = _get_service_name(framework)
     log_path = RESULTS_DIR / phase / f"logs_{scenario_name}_{config_name}.txt"
     try:
         result = subprocess.run(
@@ -282,7 +290,7 @@ def save_app_logs(framework: str, phase: str, scenario_name: str, config_name: s
 
 def stop_app_container(framework: str):
     """앱 컨테이너 종료"""
-    service = "django-app" if framework == "django" else "fastapi-app"
+    service = _get_service_name(framework)
     subprocess.run(
         ["docker", "compose", "stop", service],
         cwd=PROJECT_ROOT,
@@ -425,8 +433,15 @@ def run_phase(phase: str, config: dict):
             print(f"\n--- {config_name} ---")
             sc = get_server_config(config, config_name)
 
-            # 1. 앱 컨테이너 기동
-            start_app_container(sc, app_cpus=app_cpus)
+            # 0. DB 사용 시나리오면 DB 재시작 (동일한 DB 상태 보장)
+            if scenario_name == "real":
+                print("  DB 재시작 중...")
+                subprocess.run(["docker", "restart", "my-postgres"], check=True)
+                time.sleep(5)
+
+            # 1. 앱 컨테이너 기동 (server_config에 cpus가 있으면 우선 사용)
+            run_cpus = sc.get("cpus", app_cpus)
+            start_app_container(sc, app_cpus=run_cpus)
 
             # 2. 헬스체크 대기
             wait_for_health(sc["port"])
@@ -436,6 +451,7 @@ def run_phase(phase: str, config: dict):
                 "cpu_bound": "/benchmark/cpu",
                 "io_bound": "/benchmark/io",
                 "mixed": "/benchmark/mixed",
+                "fake_io": "/benchmark/fake-io",
                 "real_simple": "/api/foods?page=1&size=20",
                 "real": "/api/foods/search?min_energy=100&max_energy=500&page=1&size=20",
             }.get(scenario_name, "/benchmark/cpu")
@@ -448,16 +464,16 @@ def run_phase(phase: str, config: dict):
 
             stats_csv = RESULTS_DIR / phase / f"stats_{scenario_name}_{config_name}.csv"
 
-            # Phase 4: DB 컨테이너 모니터링 (real API)
+            # real 시나리오면 DB 컨테이너도 모니터링
             db_container = None
             db_stats_csv = None
-            if phase == "phase4":
+            if scenario_name == "real":
                 db_container = "my-postgres"
                 db_stats_csv = RESULTS_DIR / phase / f"stats_db_{scenario_name}_{config_name}.csv"
 
             # 앱 컨테이너 ID를 동적으로 가져오기 (프로젝트명에 의존하지 않음)
             framework = sc["framework"]
-            service_name = "django-app" if framework == "django" else "fastapi-app"
+            service_name = _get_service_name(framework)
             app_container = _get_container_id(service_name)
 
             stats_thread = threading.Thread(
@@ -493,13 +509,12 @@ def run_phase(phase: str, config: dict):
 
 def main():
     parser = argparse.ArgumentParser(description="벤치마크 자동화")
-    parser.add_argument("phase", choices=["phase1", "phase2", "phase3", "phase4", "phase5",
-                                          "phase6", "all"])
+    parser.add_argument("phase", choices=["phase1", "phase2", "phase3", "all"])
     args = parser.parse_args()
 
     config = load_config()
 
-    phases = ["phase1", "phase2", "phase3", "phase4", "phase5", "phase6"]
+    phases = ["phase1", "phase2", "phase3"]
     for phase in phases:
         if args.phase in (phase, "all"):
             if f"{phase}_scenarios" in config:

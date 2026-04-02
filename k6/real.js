@@ -32,7 +32,7 @@ export default function () {
     const page = Math.floor(Math.random() * 10) + 1;
 
     const url = `${BASE_URL}/api/foods/search?min_energy=${minEnergy}&max_energy=${maxEnergy}&sort=${sort}&page=${page}&size=20`;
-    const res = http.get(url);
+    const res = http.get(url, { tags: { name: 'foods_search' } });
     check(res, {
         'status is 200': (r) => r.status === 200,
     });

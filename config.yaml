@@ -16,68 +16,57 @@ server_configs:
     framework: fastapi
     workers: 2
     port: 8011
-    pool_size: 20
-    max_overflow: 20
   - name: fastapi-4w
     framework: fastapi
     workers: 4
     port: 8012
-    pool_size: 20
-    max_overflow: 20
+  - name: fastapi-4w-async
+    framework: fastapi
+    workers: 4
+    port: 8014
+    cpu_handler: async
+  - name: spring-default
+    framework: spring
+    port: 8031
+    tomcat_max_threads: 200
+  - name: spring-4t
+    framework: spring
+    port: 8032
+    tomcat_max_threads: 4
 
 # Phase별 앱 컨테이너 CPU 코어 제한
 phase_cpus:
-  phase1: "2"
+  phase1: "4"
   phase2: "4"
-  phase3: "2"
-  phase4: "4"
-  phase5: "2"
-  phase6: "4"
+  phase3: "4"
 
-# Phase 1: CPU-bound, 2코어
+# Phase 1: CPU-bound (4코어)
 phase1_scenarios:
   cpu_bound:
     - django-4w
     - django-16w
     - fastapi-2w
     - fastapi-4w
+    - fastapi-4w-async
+    - spring-default
+    - spring-4t
 
-# Phase 2: CPU-bound, 4코어
+# Phase 2: IO-bound (4코어)
 phase2_scenarios:
-  cpu_bound:
+  io_bound:
     - django-4w
     - django-16w
     - fastapi-2w
     - fastapi-4w
+    - spring-default
+    - spring-4t
 
-# Phase 3: IO-bound, 2코어
+# Phase 3: Fake IO — 5ms sleep + 직렬화 (4코어)
 phase3_scenarios:
-  io_bound:
+  fake_io:
     - django-4w
     - django-16w
     - fastapi-2w
     - fastapi-4w
-
-# Phase 4: IO-bound, 4코어
-phase4_scenarios:
-  io_bound:
-    - django-4w
-    - django-16w
-    - fastapi-2w
-    - fastapi-4w
-
-# Phase 5: Real Heavy (DB), 2코어
-phase5_scenarios:
-  real:
-    - django-4w
-    - django-16w
-    - fastapi-2w
-    - fastapi-4w
-
-# Phase 6: Real Heavy (DB), 4코어
-phase6_scenarios:
-  real:
-    - django-4w
-    - django-16w
-    - fastapi-2w
-    - fastapi-4w
+    - spring-default
+    - spring-4t
