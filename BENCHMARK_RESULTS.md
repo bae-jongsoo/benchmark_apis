@@ -15,37 +15,43 @@
 
 | 구성 | RPS | P50(ms) | P95(ms) | P99(ms) | CPU(%) | Mem(MB) | RPS/CPU% |
 |---|---:|---:|---:|---:|---:|---:|---:|
-| spring-4t | 24,259 | 40.6 | 51.5 | 61.1 | 391.0 | 289.2 | 62.0 |
-| spring-default | 20,105 | 46.7 | 79.6 | 124.7 | 404.1 | 379.1 | 49.8 |
-| django-4w | 919 | 1,085.1 | 1,091.4 | 1,092.0 | 402.1 | 125.3 | 2.3 |
-| fastapi-4w-async | 866 | 679.8 | 735.1 | 19,051.2 | 402.8 | 246.3 | 2.1 |
-| fastapi-4w | 829 | 1,136.3 | 1,818.5 | 2,001.0 | 402.8 | 275.7 | 2.1 |
-| django-16w | 633 | 1,571.8 | 1,605.3 | 1,624.1 | 397.7 | 443.6 | 1.6 |
-| fastapi-2w | 507 | 1,671.5 | 7,293.3 | 7,495.4 | 207.9 | 160.2 | 2.4 |
+| spring-4t | 22,969 | 42.8 | 55.3 | 66.4 | 387.5 | 263.5 | 59.3 |
+| spring-default | 19,559 | 48.9 | 81.6 | 133.5 | 404.5 | 356.3 | 48.3 |
+| django-4w | 931 | 1,071.4 | 1,080.8 | 1,082.2 | 402.8 | 130.6 | 2.3 |
+| fastapi-4w-async | 851 | 688.2 | 751.9 | 19,059.6 | 402.4 | 246.1 | 2.1 |
+| django-4w-gevent | 845 | 494.0 | 522.4 | 5,487.5 | 401.2 | 158.2 | 2.1 |
+| django-4w-gthread | 833 | 1,183.1 | 1,436.7 | 1,627.0 | 398.8 | 161.4 | 2.1 |
+| fastapi-4w | 819 | 1,155.3 | 1,810.9 | 1,860.9 | 403.3 | 275.9 | 2.0 |
+| django-16w | 647 | 1,532.4 | 1,576.6 | 1,589.1 | 398.6 | 465.2 | 1.6 |
+| fastapi-2w | 505 | 1,664.7 | 7,377.6 | 7,586.1 | 208.7 | 160.1 | 2.4 |
 
 #### Phase 2 — IO Bound (100ms sleep)
 
 | 구성 | RPS | P50(ms) | P95(ms) | P99(ms) | CPU(%) | Mem(MB) | RPS/CPU% |
 |---|---:|---:|---:|---:|---:|---:|---:|
-| fastapi-4w | 9,738 | 101.6 | 105.7 | 116.1 | 74.8 | 259.5 | 130.2 |
-| fastapi-2w | 9,582 | 102.8 | 112.2 | 122.2 | 76.5 | 154.4 | 125.2 |
-| spring-default | 1,963 | 507.7 | 516.9 | 562.2 | 36.8 | 343.7 | 53.4 |
-| django-16w | 154 | 6,242.1 | 6,290.0 | 6,296.4 | 20.3 | 443.6 | 7.6 |
-| django-4w | 38 | 17,926.7 | 18,194.6 | 18,200.3 | 5.9 | 124.6 | 6.5 |
-| spring-4t | 38 | 17,954.7 | 18,233.0 | 18,239.6 | 8.3 | 244.8 | 4.6 |
+| django-4w-gevent | 9,808 | 101.4 | 103.1 | 105.6 | 125.6 | 174.6 | 78.1 |
+| fastapi-4w | 9,672 | 101.7 | 110.1 | 124.3 | 89.6 | 260.6 | 107.9 |
+| fastapi-2w | 9,528 | 102.9 | 116.2 | 128.8 | 84.4 | 154.5 | 112.9 |
+| spring-default | 1,973 | 505.2 | 513.8 | 557.2 | 41.4 | 343.7 | 47.7 |
+| django-4w-gthread | 1,945 | 401.4 | 1,192.6 | 1,210.4 | 94.2 | 160.9 | 20.6 |
+| django-16w | 154 | 6,184.1 | 6,247.3 | 6,254.1 | 25.5 | 464.9 | 6.0 |
+| django-4w | 39 | 17,880.0 | 18,141.4 | 18,147.5 | 7.1 | 129.8 | 5.5 |
+| spring-4t | 39 | 17,912.5 | 18,185.9 | 18,195.1 | 9.2 | 246.5 | 4.2 |
 
 #### Phase 3 — Fake IO (5ms sleep + JSON 직렬화)
 
 | 구성 | RPS | P50(ms) | P95(ms) | P99(ms) | CPU(%) | Mem(MB) | RPS/CPU% |
 |---|---:|---:|---:|---:|---:|---:|---:|
-| spring-default | 37,097 | 26.1 | 31.3 | 45.0 | 212.4 | 394.9 | 174.7 |
-| fastapi-4w | 12,787 | 78.6 | 97.9 | 107.9 | 405.6 | 264.9 | 31.5 |
-| fastapi-2w | 7,133 | 140.3 | 176.3 | 184.3 | 191.3 | 158.3 | 37.3 |
-| django-16w | 2,887 | 334.2 | 349.8 | 356.9 | 110.0 | 445.1 | 26.2 |
-| spring-4t | 702 | 1,417.8 | 1,428.9 | 1,430.6 | 24.8 | 267.4 | 28.3 |
-| django-4w | 668 | 1,490.5 | 1,514.4 | 1,516.8 | 60.4 | 125.2 | 11.1 |
+| spring-default | 36,524 | 26.2 | 32.8 | 44.7 | 214.0 | 409.4 | 170.7 |
+| django-4w-gevent | 18,400 | 52.6 | 98.5 | 117.8 | 404.5 | 178.8 | 45.5 |
+| django-4w-gthread | 13,061 | 74.9 | 94.7 | 104.3 | 387.5 | 177.6 | 33.7 |
+| fastapi-4w | 10,668 | 93.7 | 125.4 | 141.1 | 360.0 | 265.6 | 29.6 |
+| fastapi-2w | 6,828 | 152.9 | 184.0 | 192.6 | 181.1 | 157.8 | 37.7 |
+| django-16w | 2,796 | 321.6 | 376.5 | 398.9 | 114.2 | 466.4 | 24.5 |
+| spring-4t | 700 | 1,421.3 | 1,453.9 | 1,456.4 | 33.0 | 263.7 | 21.2 |
+| django-4w | 649 | 1,538.7 | 1,575.7 | 1,578.8 | 73.0 | 130.1 | 8.9 |
 
-### 2차 테스트 (5,000 VUs)
+### 2차 테스트 (5,000 VUs) — 과부하 한계 테스트
 
 #### Phase 1 — CPU Bound (fib(25))
 
@@ -92,6 +98,8 @@
 | django-4w | 0% → 5.7% | 0% → 18.5% | 0% → 14.7% |
 | django-16w | 0% → 6.6% | 0% → 13.9% | 0.8% → 29.0% |
 
+※ 2차 테스트에는 gevent/gthread 구성 미포함.
+
 ---
 
 ## 2. 관측된 현상
@@ -100,15 +108,19 @@
 
 - CPU-bound에서 Spring(Java)의 RPS가 Python 프레임워크 대비 약 25배 높다.
 - CPU-bound에서 RPS/CPU% 효율도 Spring이 약 25배 높다. 같은 CPU를 쓰면서 처리량이 다르다.
-- IO-bound(100ms sleep)에서는 FastAPI가 1위. 워커 2개(fastapi-2w)로도 9,582 RPS를 낸다.
-- IO-bound에서 `spring-4t`(4스레드)과 `django-4w`(4워커)의 RPS가 38로 동일하다.
-- Fake IO(5ms sleep + 직렬화)에서도 `spring-4t`(702)과 `django-4w`(668)가 비슷하다.
-- IO-bound에서 FastAPI 워커 수(2 vs 4)는 RPS에 거의 영향이 없다 (9,582 vs 9,738).
-- 메모리는 django-4w가 가장 적게 쓴다 (125MB). Spring은 289~545MB.
+- CPU-bound에서 gevent/gthread/sync 워커 타입 간 RPS 차이가 거의 없다 (845 / 833 / 931).
+- IO-bound(100ms sleep)에서 `django-4w-gevent`(9,808)가 `fastapi-4w`(9,672)와 거의 동일하다.
+- IO-bound에서 `django-4w-gthread`(1,945)는 `spring-default`(1,973)와 비슷한 수준이다.
+- IO-bound에서 `spring-4t`(4스레드)과 `django-4w`(sync 4워커)의 RPS가 39로 동일하다.
+- IO-bound에서 FastAPI 워커 수(2 vs 4)는 RPS에 거의 영향이 없다 (9,528 vs 9,672).
+- Fake IO에서 `django-4w-gevent`(18,400)가 `fastapi-4w`(10,668)를 앞질렀다.
+- Fake IO에서 `django-4w-gthread`(13,061)도 `fastapi-4w`(10,668)보다 높다.
+- Fake IO에서 `spring-default`(36,524)가 여전히 1위.
+- 메모리는 django-4w(sync)가 가장 적게 쓴다 (130MB). gevent/gthread도 160~179MB로 가벼운 편.
 - 5,000 VUs에서 Spring은 전 시나리오 에러율 0%를 유지했다. `spring-4t`(4스레드)도 마찬가지.
-- 5,000 VUs IO-bound에서 FastAPI의 에러율이 41~69%로 가장 높다. 단, RPS 숫자 자체는 30,000 이상으로 높게 찍힌다.
-- 5,000 VUs에서 Django는 Fake IO에서 가장 많이 무너졌다 (django-16w 29%, django-4w 14.7%).
-- `fastapi-4w-async`의 P99가 1,000 VUs에서 이미 19초로 다른 구성 대비 극단적으로 높다.
+- 5,000 VUs IO-bound에서 FastAPI의 에러율이 41~69%로 가장 높다. RPS 숫자 자체는 30,000 이상으로 높게 찍힌다.
+- 5,000 VUs에서 Django(sync)는 Fake IO에서 가장 많이 무너졌다 (django-16w 29%, django-4w 14.7%).
+- `fastapi-4w-async`의 P99가 1,000 VUs에서 이미 19초로 극단적으로 높다.
 
 ---
 
@@ -117,15 +129,17 @@
 아래는 소스코드 레벨에서 검증하지 않은 추측임.
 
 - **Spring CPU 25배 차이**: JVM JIT 컴파일러가 fib() 같은 반복 호출을 네이티브 코드로 최적화하는 반면, Python은 인터프리터로 한 줄씩 실행하기 때문으로 추측.
-- **IO-bound에서 async 모델이 동기 모델을 압도**: FastAPI(async)는 sleep 대기 중에 다른 요청을 이벤트 루프에서 처리할 수 있고, Gunicorn/Tomcat 동기 모델은 스레드/워커가 sleep 동안 점유되어 동시 처리 수가 스레드 수로 제한되기 때문으로 추측.
-- **spring-4t ≒ django-4w**: 둘 다 동기 모델이고 동시 처리 단위가 4개이므로, 언어 성능과 무관하게 IO 대기 시간이 병목이 되어 같은 결과가 나오는 것으로 추측.
-- **FastAPI 워커 수 무관 (IO-bound)**: async 모델에서는 워커 하나가 수천 개의 IO 대기를 동시에 처리할 수 있어서, 워커를 늘려도 IO-bound에서는 효과가 작은 것으로 추측.
-- **Spring 에러 0% (과부하)**: Tomcat의 accept queue가 초과 요청을 버리지 않고 대기열에 쌓아둔 뒤 스레드가 빌 때마다 처리하는 방식이라 추측. 응답 시간은 길어지지만(P50: 23초) 요청 자체는 거절하지 않는 것으로 보임.
+- **IO-bound에서 async/gevent 모델이 동기 모델을 압도**: FastAPI(async)와 gevent는 sleep 대기 중에 다른 요청을 처리할 수 있고, 동기 모델은 스레드/워커가 sleep 동안 점유되어 동시 처리 수가 스레드 수로 제한되기 때문으로 추측.
+- **gevent ≒ FastAPI (IO-bound)**: gevent가 time.sleep을 monkey-patch하여 비동기로 바꾸기 때문에, 결과적으로 FastAPI의 asyncio.sleep과 같은 효과를 내는 것으로 추측.
+- **gevent > FastAPI (Fake IO)**: 짧은 IO(5ms)에서는 직렬화 비중이 커지는데, gevent는 직렬화를 greenlet 안에서 바로 실행하고, FastAPI는 이벤트 루프 + 코루틴 스케줄링 오버헤드가 있기 때문으로 추측.
+- **gthread ≒ spring-default (IO-bound)**: 둘 다 스레드 풀 모델(gthread 50스레드, Tomcat 200스레드). 100ms sleep이면 50스레드로 초당 500, 200스레드로 초당 2,000이 이론 상한이고, 실측치(1,945 / 1,973)가 이에 가까움.
+- **CPU-bound에서 워커 타입 무관**: CPU 연산은 GIL에 의해 한 번에 하나의 스레드/greenlet만 실행 가능하므로, 워커 타입을 바꿔도 효과가 없는 것으로 추측.
+- **spring-4t ≒ django-4w (IO-bound)**: 둘 다 동기 모델이고 동시 처리 단위가 4개이므로, 언어 성능과 무관하게 IO 대기 시간이 병목이 되어 같은 결과가 나오는 것으로 추측.
+- **Spring 에러 0% (과부하)**: Tomcat의 accept queue가 초과 요청을 대기열에 쌓아둔 뒤 스레드가 빌 때마다 처리하는 방식이라 추측. 응답은 느려지지만(P50: 23초) 요청 자체는 거절하지 않는 것으로 보임.
 - **FastAPI 과부하 에러 41~69%**: async 모델이 요청을 거절하지 않고 모두 받아들이지만, 동시에 처리하려다 리소스 한계에 부딪혀 응답 자체가 실패하는 것으로 추측.
 - **Django 과부하 에러**: Gunicorn의 backlog 큐가 넘치면 OS 레벨에서 연결이 거부되는 것으로 추측.
-- **fastapi-4w-async P99 19초**: async def에서 fib()를 직접 실행하면 이벤트 루프가 블로킹되어, 다른 요청들이 그 동안 대기하면서 tail latency가 극단적으로 높아지는 것으로 추측.
+- **fastapi-4w-async P99 19초**: async def에서 fib()를 직접 실행하면 이벤트 루프가 블로킹되어, 다른 요청들이 대기하면서 tail latency가 극단적으로 높아지는 것으로 추측.
 - **Spring 메모리 사용량 높음**: JVM이 힙 메모리를 미리 할당하고, 클래스 로더/GC 메타데이터 등 런타임 오버헤드가 있기 때문으로 추측.
-- **Fake IO에서 spring-default(200스레드) CPU 효율이 높음**: Jackson 직렬화가 Pydantic보다 빠르게 실행되어 스레드가 짧게 점유되고, 200개 스레드가 5ms sleep을 동시에 처리할 수 있기 때문으로 추측.
 
 ---
 
@@ -137,7 +151,21 @@
 | Docker | CPU 4코어 / Memory 2GB 제한 |
 | Python | 3.12 |
 | Java | 21 (Eclipse Temurin) |
-| Django | 4.x + Django Ninja + Gunicorn |
+| Django | 4.x + Django Ninja + Gunicorn (sync / gevent / gthread) |
 | FastAPI | + Uvicorn |
 | Spring Boot | 3.4.4 + Tomcat |
 | Load Test | k6 |
+
+### 서버 구성 상세
+
+| 구성 | 프레임워크 | 워커 모델 | 워커/스레드 수 |
+|---|---|---|---|
+| django-4w | Django + Gunicorn | sync | 워커 4 |
+| django-16w | Django + Gunicorn | sync | 워커 16 |
+| django-4w-gevent | Django + Gunicorn | gevent | 워커 4 (greenlet 다수) |
+| django-4w-gthread | Django + Gunicorn | gthread | 워커 4 x 스레드 50 |
+| fastapi-2w | FastAPI + Uvicorn | async | 워커 2 |
+| fastapi-4w | FastAPI + Uvicorn | async | 워커 4 |
+| fastapi-4w-async | FastAPI + Uvicorn | async (async def CPU) | 워커 4 |
+| spring-default | Spring Boot + Tomcat | 스레드 풀 | 스레드 200 |
+| spring-4t | Spring Boot + Tomcat | 스레드 풀 | 스레드 4 |

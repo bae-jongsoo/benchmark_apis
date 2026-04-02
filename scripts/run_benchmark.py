@@ -69,6 +69,10 @@ def start_app_container(server_config: dict, app_cpus: str = "2"):
         env["MAX_OVERFLOW"] = str(server_config["max_overflow"])
     if "tomcat_max_threads" in server_config:
         env["TOMCAT_MAX_THREADS"] = str(server_config["tomcat_max_threads"])
+    if "worker_class" in server_config:
+        env["WORKER_CLASS"] = server_config["worker_class"]
+    if "threads" in server_config:
+        env["THREADS"] = str(server_config["threads"])
 
     subprocess.run(
         ["docker", "compose", "up", "-d", "--build", service],

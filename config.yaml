@@ -1,5 +1,5 @@
 test_duration: 40        # 초
-concurrent_users: 5000
+concurrent_users: 1000
 rampup_seconds: 10       # k6 stages: 0→VUs 도달 시간
 warmup_seconds: 5
 
@@ -12,6 +12,17 @@ server_configs:
     framework: django
     workers: 16
     port: 8003
+  - name: django-4w-gevent
+    framework: django
+    workers: 4
+    port: 8004
+    worker_class: gevent
+  - name: django-4w-gthread
+    framework: django
+    workers: 4
+    port: 8005
+    worker_class: gthread
+    threads: 50
   - name: fastapi-2w
     framework: fastapi
     workers: 2
@@ -45,6 +56,8 @@ phase1_scenarios:
   cpu_bound:
     - django-4w
     - django-16w
+    - django-4w-gevent
+    - django-4w-gthread
     - fastapi-2w
     - fastapi-4w
     - fastapi-4w-async
@@ -56,6 +69,8 @@ phase2_scenarios:
   io_bound:
     - django-4w
     - django-16w
+    - django-4w-gevent
+    - django-4w-gthread
     - fastapi-2w
     - fastapi-4w
     - spring-default
@@ -66,6 +81,8 @@ phase3_scenarios:
   fake_io:
     - django-4w
     - django-16w
+    - django-4w-gevent
+    - django-4w-gthread
     - fastapi-2w
     - fastapi-4w
     - spring-default

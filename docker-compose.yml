@@ -5,6 +5,8 @@ services:
       dockerfile: django_app/Dockerfile
     environment:
       - WORKERS=${WORKERS:-4}
+      - WORKER_CLASS=${WORKER_CLASS:-sync}
+      - THREADS=${THREADS:-1}
       - DB_HOST=host.docker.internal
       - DB_PORT=5432
       - DB_NAME=foodcommit
