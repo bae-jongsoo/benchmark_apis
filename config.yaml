@@ -1,5 +1,5 @@
 test_duration: 40        # 초
-concurrent_users: 1000
+concurrent_users: 5000
 rampup_seconds: 10       # k6 stages: 0→VUs 도달 시간
 warmup_seconds: 5
 

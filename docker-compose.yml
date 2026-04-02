@@ -76,6 +76,10 @@ services:
     volumes:
       - ./k6:/scripts
       - ./results:/results
+    deploy:
+      resources:
+        limits:
+          memory: 8G
     networks:
       - bench-network
 
